@@ -137,10 +137,10 @@ public class Manager
 	{
 		private static final long serialVersionUID = 8137846998774342633L;
 
-	    public MappingParentDescriptorList(int initialCapacity)
-	    {
-	    	super(initialCapacity);
-	    }
+		public MappingParentDescriptorList(int initialCapacity)
+		{
+			super(initialCapacity);
+		}
 
 		public boolean contains(int mappingId)
 		{
@@ -210,20 +210,20 @@ public class Manager
 		this();
 
 		// Try to retrieve authentication details using Java API.
-        _authorizationName = request.getRemoteUser();
+		_authorizationName = request.getRemoteUser();
 
-        // If it fails try to read 'authorization' HTTP header directly.
-        if (_authorizationName == null)
-        {
-	        String authHeader = request.getHeader("authorization");
-	        if (authHeader != null && !authHeader.isEmpty() && authHeader.startsWith("Basic"))
-	        {
-	        	// Extract user name from basic authentication HTTP header.
-	        	authHeader = authHeader.substring(authHeader.indexOf(' '));
-	        	authHeader = StringUtils.newStringUtf8(Base64.decodeBase64(authHeader));
-	        	_authorizationName = authHeader.substring(0, authHeader.indexOf(':'));
-	        }
-        }
+		// If it fails try to read 'authorization' HTTP header directly.
+		if (_authorizationName == null)
+		{
+			String authHeader = request.getHeader("authorization");
+			if (authHeader != null && !authHeader.isEmpty() && authHeader.startsWith("Basic"))
+			{
+				// Extract user name from basic authentication HTTP header.
+				authHeader = authHeader.substring(authHeader.indexOf(' '));
+				authHeader = StringUtils.newStringUtf8(Base64.decodeBase64(authHeader));
+				_authorizationName = authHeader.substring(0, authHeader.indexOf(':'));
+			}
+		}
 	}
 
 	public void close()
@@ -297,10 +297,12 @@ public class Manager
 		InputStream			inputSqlGen = getClass().getResourceAsStream(xsltResourcePath);
 		XsltExecutable		xsltExec = xsltCompiler.compile(new StreamSource(inputSqlGen));
 		XsltTransformer		transformer = xsltExec.load();
+		Serializer serializer = processor.newSerializer();
 
 		StringWriter swSqlQuery = new StringWriter();
+		serializer.setOutputWriter(swSqlQuery);
 		transformer.setInitialContextNode(processor.newDocumentBuilder().build(new StreamSource(new StringReader(inputData))));
-		transformer.setDestination(new Serializer(swSqlQuery));
+		transformer.setDestination(serializer);
 		transformer.setParameter(new QName("AuthorizationName"), new XdmAtomicValue(getAuthorizationName()));
 		_logger.trace("Generating SQL query.");
 		transformer.transform();
@@ -476,9 +478,13 @@ public class Manager
 			XsltExecutable		xsltExec = xsltCompiler.compile(new StreamSource(inputSqlGen));
 			XsltTransformer		transformer = xsltExec.load();
 
+
 			StringWriter swMergedMapping = new StringWriter();
+			Serializer serializer = processor.newSerializer();
+			serializer.setOutputWriter(swMergedMapping);
+
 			transformer.setInitialContextNode(processor.newDocumentBuilder().build(new StreamSource(new StringReader(xsltInput))));
-			transformer.setDestination(new Serializer(swMergedMapping));
+			transformer.setDestination(serializer);
 			transformer.setParameter(new QName("", "replace"), new XdmAtomicValue(replace ? 1 : 0));
 			_logger.trace("Generating merged mapping.");
 			transformer.transform();

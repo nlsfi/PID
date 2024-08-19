@@ -42,7 +42,7 @@
 		<plugins>
 			<plugin>
 				<artifactId>maven-compiler-plugin</artifactId>
-				<version>3.8.1</version>
+				<version>3.13.0</version>
 				<configuration>
 					<release>${jdk.release.version}</release>
 				</configuration>
@@ -50,7 +50,7 @@
 			<plugin>
 				<groupId>org.codehaus.mojo</groupId>
 				<artifactId>buildnumber-maven-plugin</artifactId>
-				<version>1.4</version>
+				<version>3.1.0</version>
 				<executions>
 					<execution>
 						<phase>validate</phase>
@@ -68,7 +68,7 @@
 			</plugin>
 			<plugin>
 				<artifactId>maven-surefire-plugin</artifactId>
-				<version>3.0.0-M5</version>
+				<version>3.4.0</version>
 				<configuration>
 					<parallel>methods</parallel>
 					<threadCount>10</threadCount>
@@ -81,7 +81,7 @@
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-resources-plugin</artifactId>
-				<version>3.2.0</version>
+				<version>3.3.1</version>
 				<configuration>
 					<propertiesEncoding>${project.build.sourceEncoding}</propertiesEncoding>
 				</configuration>
@@ -89,7 +89,7 @@
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-war-plugin</artifactId>
-				<version>3.3.1</version>
+				<version>3.4.0</version>
 				<configuration>
 					<archive>
 						<manifest>

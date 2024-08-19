@@ -27,14 +27,18 @@
 		<url>https://jira.csiro.au/browse/SISS</url>
 	</issueManagement>
 	<properties>
+		<!-- finalName>${project.artifactId}-${project.version}.${buildNumber}</finalName -->
+		<!-- Overridable with: mvn -DfinalName=something_else clean install -->
+		<finalName>${project.artifactId}</finalName>
 		<jdk.release.version>11</jdk.release.version>
-		<log4j.version>2.14.1</log4j.version>
+        <log4j.version>2.23.1</log4j.version>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <postgresql.version>42.7.3</postgresql.version>
 		<postgres.jdbc.scope>provided</postgres.jdbc.scope>
 		<version.check.repository>https://cgsrv1.arrc.csiro.au/swrepo/PidService/jenkins/master/</version.check.repository>
 	</properties>
 	<build>
-		<finalName>${project.artifactId}-${project.version}.${buildNumber}</finalName>
+		<finalName>${finalName}</finalName>
 		<plugins>
 			<plugin>
 				<artifactId>maven-compiler-plugin</artifactId>
@@ -169,8 +173,9 @@
         <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
-            <version>4.10</version>
+            <version>4.13.2</version>
             <optional>false</optional>
+			<scope>test</scope>
         </dependency>
 		<dependency>
 			<groupId>org.apache.logging.log4j</groupId>
@@ -193,9 +198,9 @@
 			<version>4.2.1</version>
 		</dependency>
 		<dependency>
-			<groupId>postgresql</groupId>
+			<groupId>org.postgresql</groupId>
 			<artifactId>postgresql</artifactId>
-			<version>9.1-901.jdbc4</version>
+			<version>42.7.3</version>
 			<scope>${postgres.jdbc.scope}</scope>
 		</dependency>
 		<dependency>

@@ -1,9 +1,9 @@
 /*
  * CSIRO Open Source Software License Agreement (variation of the BSD / MIT License)
- * 
+ *
  * Copyright (c) 2013, Commonwealth Scientific and Industrial Research Organisation (CSIRO)
  * ABN 41 687 119 230.
- * 
+ *
  * All rights reserved. This code is licensed under CSIRO Open Source Software
  * License Agreement license, available at the root application directory.
  */
@@ -37,7 +37,7 @@ import javax.naming.NamingException;
 import javax.servlet.http.HttpServletRequest;
 import javax.sql.DataSource;
 import javax.xml.XMLConstants;
-import javax.xml.bind.ValidationException;
+import jakarta.xml.bind.ValidationException;
 import javax.xml.transform.stream.StreamSource;
 import javax.xml.validation.Schema;
 import javax.xml.validation.SchemaFactory;
@@ -63,7 +63,7 @@ import org.apache.commons.fileupload.FileItem;
 import org.apache.commons.fileupload.disk.DiskFileItem;
 import org.apache.commons.fileupload.disk.DiskFileItemFactory;
 import org.apache.commons.fileupload.servlet.ServletFileUpload;
-import org.apache.commons.lang.StringEscapeUtils;
+import org.apache.commons.lang3.StringEscapeUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.json.simple.JSONObject;
@@ -84,7 +84,7 @@ import csiro.pidsvc.mappingstore.condition.SpecialConditionType;
 
 /**
  * Manager class encapsulates application/database interaction logic.
- * 
+ *
  * @author Pavel Golodoniuc, CSIRO Mineral Resources Flagship
  */
 public class Manager
@@ -137,10 +137,10 @@ public class Manager
 	{
 		private static final long serialVersionUID = 8137846998774342633L;
 
-	    public MappingParentDescriptorList(int initialCapacity)
-	    {
-	    	super(initialCapacity);
-	    }
+		public MappingParentDescriptorList(int initialCapacity)
+		{
+			super(initialCapacity);
+		}
 
 		public boolean contains(int mappingId)
 		{
@@ -210,20 +210,20 @@ public class Manager
 		this();
 
 		// Try to retrieve authentication details using Java API.
-        _authorizationName = request.getRemoteUser();
+		_authorizationName = request.getRemoteUser();
 
-        // If it fails try to read 'authorization' HTTP header directly.
-        if (_authorizationName == null)
-        {
-	        String authHeader = request.getHeader("authorization");
-	        if (authHeader != null && !authHeader.isEmpty() && authHeader.startsWith("Basic"))
-	        {
-	        	// Extract user name from basic authentication HTTP header.
-	        	authHeader = authHeader.substring(authHeader.indexOf(' '));
-	        	authHeader = StringUtils.newStringUtf8(Base64.decodeBase64(authHeader));
-	        	_authorizationName = authHeader.substring(0, authHeader.indexOf(':'));
-	        }
-        }
+		// If it fails try to read 'authorization' HTTP header directly.
+		if (_authorizationName == null)
+		{
+			String authHeader = request.getHeader("authorization");
+			if (authHeader != null && !authHeader.isEmpty() && authHeader.startsWith("Basic"))
+			{
+				// Extract user name from basic authentication HTTP header.
+				authHeader = authHeader.substring(authHeader.indexOf(' '));
+				authHeader = StringUtils.newStringUtf8(Base64.decodeBase64(authHeader));
+				_authorizationName = authHeader.substring(0, authHeader.indexOf(':'));
+			}
+		}
 	}
 
 	public void close()
@@ -271,7 +271,7 @@ public class Manager
 			Schema schema = schemaFactory.newSchema(new StreamSource(getClass().getResourceAsStream(xmlSchemaResourcePath)));
 			Validator validator = schema.newValidator();
 			_logger.trace("Validating XML Schema.");
-			validator.validate(new StreamSource(new StringReader(inputData))); 
+			validator.validate(new StreamSource(new StringReader(inputData)));
 		}
 		catch (SAXException ex)
 		{
@@ -297,10 +297,12 @@ public class Manager
 		InputStream			inputSqlGen = getClass().getResourceAsStream(xsltResourcePath);
 		XsltExecutable		xsltExec = xsltCompiler.compile(new StreamSource(inputSqlGen));
 		XsltTransformer		transformer = xsltExec.load();
+		Serializer serializer = processor.newSerializer();
 
 		StringWriter swSqlQuery = new StringWriter();
+		serializer.setOutputWriter(swSqlQuery);
 		transformer.setInitialContextNode(processor.newDocumentBuilder().build(new StreamSource(new StringReader(inputData))));
-		transformer.setDestination(new Serializer(swSqlQuery));
+		transformer.setDestination(serializer);
 		transformer.setParameter(new QName("AuthorizationName"), new XdmAtomicValue(getAuthorizationName()));
 		_logger.trace("Generating SQL query.");
 		transformer.transform();
@@ -369,7 +371,7 @@ public class Manager
 						ret = callback.process(item.getInputStream());
 					}
 					else
-						throw ex; 
+						throw ex;
 				}
 
 				// Process the first uploaded file only.
@@ -428,7 +430,7 @@ public class Manager
 		{
 			boolean noMappings = ret.equalsIgnoreCase("OK: No mapping rules found in the backup.");
 			String otherRestoreStatus = "";
-			
+
 			// Restore condition sets.
 			String retSubset = createConditionSet(inputData);
 			if (retSubset.startsWith("OK: Success"))
@@ -476,9 +478,13 @@ public class Manager
 			XsltExecutable		xsltExec = xsltCompiler.compile(new StreamSource(inputSqlGen));
 			XsltTransformer		transformer = xsltExec.load();
 
+
 			StringWriter swMergedMapping = new StringWriter();
+			Serializer serializer = processor.newSerializer();
+			serializer.setOutputWriter(swMergedMapping);
+
 			transformer.setInitialContextNode(processor.newDocumentBuilder().build(new StreamSource(new StringReader(xsltInput))));
-			transformer.setDestination(new Serializer(swMergedMapping));
+			transformer.setDestination(serializer);
 			transformer.setParameter(new QName("", "replace"), new XdmAtomicValue(replace ? 1 : 0));
 			_logger.trace("Generating merged mapping.");
 			transformer.transform();
@@ -774,7 +780,7 @@ public class Manager
 		{
 			if (pst != null)
 				pst.close();
-		}		
+		}
 	}
 
 	private MappingMatchResults findMatchImpl(PreparedStatement pst, URI uri, HttpServletRequest request, boolean patternBased) throws SQLException, InstantiationException, IllegalAccessException, ClassNotFoundException, IllegalArgumentException, SecurityException, InvocationTargetException, NoSuchMethodException
@@ -851,7 +857,7 @@ public class Manager
 						{
 							// Set a flag that one-to-one mapping has been found but neither matching conditions nor
 							// default actions defined.
-							matchAuxiliaryData = true; 
+							matchAuxiliaryData = true;
 						}
 					}
 				}
@@ -935,7 +941,7 @@ public class Manager
 				/*
 				 * Once ContentType condition is encountered process all
 				 * ContentType conditions in one go as a group.
-				 * 
+				 *
 				 * Skip if ContentType conditions have already been processed.
 				 */
 				if (prioritizedConditions == null && descriptor.Type.equalsIgnoreCase("ContentType"))
@@ -1307,7 +1313,7 @@ public class Manager
 	public boolean saveSettings(Map<?, ?> settings) throws SQLException
 	{
 		String sqlQuery = "BEGIN;\n", value;
-		HashMap<String, String> params = new HashMap<String, String>(); 
+		HashMap<String, String> params = new HashMap<String, String>();
 		for (Object key : settings.keySet())
 		{
 			if (key.equals("cmd"))

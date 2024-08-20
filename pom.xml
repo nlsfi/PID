@@ -3,7 +3,7 @@
 	<groupId>csiro.pidsvc</groupId>
 	<artifactId>pidsvc</artifactId>
 	<packaging>war</packaging>
-	<version>1.2</version>
+	<version>1.3-SNAPSHOT</version>
 	<name>Persistent Identifiers PID Service (PID Service)</name>
 	<url>https://confluence.csiro.au/x/9ZMKGg</url>
 	<licenses>

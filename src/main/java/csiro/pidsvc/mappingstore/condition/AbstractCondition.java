@@ -13,7 +13,7 @@ package csiro.pidsvc.mappingstore.condition;
 import java.util.HashMap;
 import java.util.regex.Matcher;
 
-import javax.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletRequest;
 
 import csiro.pidsvc.helper.URI;
 

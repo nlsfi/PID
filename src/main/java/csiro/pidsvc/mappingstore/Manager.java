@@ -18,6 +18,8 @@ import java.io.StringWriter;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.net.URISyntaxException;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -34,7 +36,7 @@ import java.util.zip.GZIPInputStream;
 import javax.naming.Context;
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
-import javax.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletRequest;
 import javax.sql.DataSource;
 import javax.xml.XMLConstants;
 import jakarta.xml.bind.ValidationException;
@@ -59,10 +61,10 @@ import net.sf.saxon.s9api.XsltTransformer;
 
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.codec.binary.StringUtils;
-import org.apache.commons.fileupload.FileItem;
-import org.apache.commons.fileupload.disk.DiskFileItem;
-import org.apache.commons.fileupload.disk.DiskFileItemFactory;
-import org.apache.commons.fileupload.servlet.ServletFileUpload;
+import org.apache.commons.fileupload2.core.FileItem;
+import org.apache.commons.fileupload2.core.FileUploadException;
+import org.apache.commons.fileupload2.core.DiskFileItemFactory;
+import org.apache.commons.fileupload2.jakarta.servlet6.JakartaServletFileUpload;
 import org.apache.commons.lang3.StringEscapeUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -93,6 +95,11 @@ public class Manager
 
 	protected Connection	_connection = null;
 	private String 			_authorizationName = null;
+    private static final int KB = 1024;
+    private static final int MB = 1024 * KB;
+
+    // Store files smaller than 128kb in memory instead of writing them to disk
+    private static final int MAX_SIZE_MEMORY = 128 * KB;
 
 	public class MappingMatchResults
 	{
@@ -329,6 +336,7 @@ public class Manager
 		return null;
 	}
 
+
 	@SuppressWarnings("unchecked")
 	protected String unwrapCompressedBackupFile(HttpServletRequest request, ICallback callback)
 	{
@@ -338,18 +346,17 @@ public class Manager
 
 		try
 		{
-			DiskFileItemFactory fileItemFactory = new DiskFileItemFactory();
+			// DiskFileItemFactory fileItemFactory = new DiskFileItemFactory();
+			Path tempDir = Paths.get(System.getProperty("java.io.tmpdir"));
+			DiskFileItemFactory diskFileItemFactory = DiskFileItemFactory.builder()
+				.setPath(tempDir)
+				.setBufferSize(MAX_SIZE_MEMORY).get();
 
-			// Set the size threshold, above which content will be stored on disk.
-			fileItemFactory.setSizeThreshold(1 * 1024 * 1024); // 1 MB
-//			fileItemFactory.setSizeThreshold(100 * 1024); // 100 KB
+            JakartaServletFileUpload upload = new JakartaServletFileUpload(diskFileItemFactory);
+			upload.setSizeMax(1 * MB); // 1 MB
+// 			ServletFileUpload uploadHandler = new ServletFileUpload(fileItemFactory);
 
-			// Set the temporary directory to store the uploaded files of size above threshold.
-			fileItemFactory.setRepository(new File(System.getProperty("java.io.tmpdir")));
-
-			ServletFileUpload uploadHandler = new ServletFileUpload(fileItemFactory);
-
-			fileList = uploadHandler.parseRequest(request);
+			fileList = upload.parseRequest(request);
 			for (FileItem item : fileList)
 			{
 				if (item.isFormField())
@@ -405,8 +412,13 @@ public class Manager
 				// Delete all uploaded files.
 				for (FileItem item : fileList)
 				{
-					if (!item.isFormField() && !item.isInMemory())
-						((DiskFileItem)item).delete();
+					if (!item.isFormField() && !item.isInMemory()) {
+						try {
+							item.delete();
+						} catch (Exception e) {
+							_logger.warn("Unable to delete file.");
+						}
+					}
 				}
 			}
 		}

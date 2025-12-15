@@ -131,8 +131,12 @@
 							irreversible and will cause complete loss of mapping configuration.
 						</div>
 					</div>
-					<div id="swfuploadControl" style="margin: 25px 0 15px 0;">
-						<input type="button" id="UploadButton" />
+					<!-- id="swfuploadControl"  -->
+					<div style="margin: 25px 0 15px 0;">
+						<form method="POST" action="controller?cmd=import">
+							<textarea name="payload"></textarea>
+							<input type="submit" id="UploadButton" />
+						</form>
 					</div>
 					<div style="background: #fafafa; width: 600px; padding-top: 5px; display: none;">
 						<table id="UploadQueue" border="0" cellpadding="5" cellspacing="1" width="600">

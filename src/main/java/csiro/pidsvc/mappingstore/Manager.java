@@ -10,6 +10,7 @@
 
 package csiro.pidsvc.mappingstore;
 
+import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
@@ -20,6 +21,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.net.URISyntaxException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.nio.charset.StandardCharsets;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -1279,13 +1281,26 @@ public class Manager
 
 	public String importMappings(HttpServletRequest request)
 	{
-		return unwrapCompressedBackupFile(request, new ICallback() {
-			@Override
-			public String process(InputStream inputStream) throws Exception
-			{
-				return createMapping(inputStream, true);
+		String payload = request.getParameter("payload");
+		if (payload != null) {
+			try (ByteArrayInputStream inputStream = new ByteArrayInputStream(payload.getBytes(StandardCharsets.UTF_8))) {
+				String response = createMapping(inputStream, true);
+				_logger.debug(response);
+				return response;
+			} catch (Exception e) {
+				_logger.error(e);
+				// e.printStackTrace();
+				return "";
 			}
-		});
+		} else {
+			return unwrapCompressedBackupFile(request, new ICallback() {
+				@Override
+				public String process(InputStream inputStream) throws Exception
+				{
+					return createMapping(inputStream, true);
+				}
+			});
+		}
 	}
 
 	public String mergeMappingUpload(HttpServletRequest request)

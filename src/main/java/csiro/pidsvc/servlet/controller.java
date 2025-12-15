@@ -155,7 +155,7 @@ public class controller extends HttpServlet
 			mgr = new Manager(request);
 			if (mgr.getAuthorizationName() == null) {
 				// return an error rather than do stuff and fail on null pointer with missing user
-				Http.returnErrorCode(response, HttpServletResponse.SC_FORBIDDEN);
+				response.sendError(HttpServletResponse.SC_FORBIDDEN, "User not found");
 				return;
 			}
 

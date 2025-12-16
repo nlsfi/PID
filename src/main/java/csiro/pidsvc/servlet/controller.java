@@ -17,6 +17,7 @@ import java.util.Date;
 import java.util.zip.GZIPOutputStream;
 
 import jakarta.servlet.ServletException;
+import jakarta.servlet.ServletConfig;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -52,6 +53,21 @@ public class controller extends HttpServlet
 	public controller()
 	{
 		super();
+	}
+
+	/**
+	 * @see Servlet#init(ServletConfig)
+	 */
+	public void init(ServletConfig config) throws ServletException {
+		if ("true".equals(System.getenv("INIT_PID_DB"))) {
+			// run flyway migration that creates the initial db
+			try {
+				Manager.initDb();
+			} catch (Exception ex) {
+				_logger.error(ex);
+				ex.printStackTrace();
+			}
+		}
 	}
 
 	/**

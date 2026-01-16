@@ -21,8 +21,10 @@ import java.util.jar.Manifest;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import javax.naming.Context;
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
+import javax.sql.DataSource;
 import jakarta.servlet.ServletConfig;
 import jakarta.servlet.ServletContext;
 import jakarta.servlet.http.HttpServlet;
@@ -33,6 +35,8 @@ import org.json.simple.JSONObject;
 
 import csiro.pidsvc.helper.Http;
 import csiro.pidsvc.helper.JSONObjectHelper;
+import csiro.pidsvc.mappingstore.Manager;
+import org.flywaydb.core.Flyway;
 
 /**
  * Application settings handling.
@@ -66,9 +70,10 @@ public class Settings
 
 		// Retrieve settings.
 		FileInputStream fis = null;
+		InitialContext context = null;
 		try
 		{
-			InitialContext context = new InitialContext();
+			context = new InitialContext();
 			String settingsFile = (String)context.lookup("java:comp/env/" + SETTINGS_OPT);
 			fis = new FileInputStream(settingsFile);
 			_properties = new PropertyResourceBundle(fis);
@@ -82,6 +87,22 @@ public class Settings
 		{
 			if (fis != null)
 				fis.close();
+		}
+		if ("true".equals(System.getenv("INIT_PID_DB"))) {
+			// run flyway migration that creates the initial db
+			try {
+				Context envCtx = (Context)context.lookup("java:comp/env");
+				DataSource ds = (DataSource)envCtx.lookup(this.getProperty("jndiReferenceName"));
+
+				// Create the Flyway instance and point it to the database
+				Flyway flyway = Flyway.configure().dataSource(ds).load();
+
+				// Start the migration
+				flyway.migrate();
+			} catch (Exception ex) {
+				_logger.error(ex);
+				ex.printStackTrace();
+			}
 		}
 
 		// Get additional system properties.

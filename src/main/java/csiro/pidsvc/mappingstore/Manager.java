@@ -86,7 +86,6 @@ import csiro.pidsvc.mappingstore.condition.ConditionContentType;
 import csiro.pidsvc.mappingstore.condition.ConditionQrCodeRequest;
 import csiro.pidsvc.mappingstore.condition.SpecialConditionType;
 
-
 /**
  * Manager class encapsulates application/database interaction logic.
  *

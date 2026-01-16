@@ -17,7 +17,6 @@ import java.util.Date;
 import java.util.zip.GZIPOutputStream;
 
 import jakarta.servlet.ServletException;
-import jakarta.servlet.ServletConfig;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;

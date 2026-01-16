@@ -56,21 +56,6 @@ public class controller extends HttpServlet
 	}
 
 	/**
-	 * @see Servlet#init(ServletConfig)
-	 */
-	public void init(ServletConfig config) throws ServletException {
-		if ("true".equals(System.getenv("INIT_PID_DB"))) {
-			// run flyway migration that creates the initial db
-			try {
-				Manager.initDb();
-			} catch (Exception ex) {
-				_logger.error(ex);
-				ex.printStackTrace();
-			}
-		}
-	}
-
-	/**
 	 * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse
 	 *	  response)
 	 */

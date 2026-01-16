@@ -86,7 +86,6 @@ import csiro.pidsvc.mappingstore.condition.ConditionContentType;
 import csiro.pidsvc.mappingstore.condition.ConditionQrCodeRequest;
 import csiro.pidsvc.mappingstore.condition.SpecialConditionType;
 
-import org.flywaydb.core.Flyway;
 
 /**
  * Manager class encapsulates application/database interaction logic.
@@ -235,18 +234,6 @@ public class Manager
 				_authorizationName = authHeader.substring(0, authHeader.indexOf(':'));
 			}
 		}
-	}
-
-	public static void initDb() throws NamingException, SQLException, IOException {
-		InitialContext initCtx = new InitialContext();
-		Context envCtx = (Context)initCtx.lookup("java:comp/env");
-		DataSource ds = (DataSource)envCtx.lookup(Settings.getInstance().getProperty("jndiReferenceName"));
-
-        // Create the Flyway instance and point it to the database
-        Flyway flyway = Flyway.configure().dataSource(ds).load();
-
-        // Start the migration
-        flyway.migrate();
 	}
 
 	public void close()

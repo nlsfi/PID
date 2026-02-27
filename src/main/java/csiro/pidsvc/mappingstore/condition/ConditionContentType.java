@@ -15,7 +15,7 @@ import java.util.Vector;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import javax.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletRequest;
 
 import csiro.pidsvc.helper.URI;
 import csiro.pidsvc.mappingstore.condition.helper.PrioritizedQueue;

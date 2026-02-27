@@ -16,10 +16,10 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.zip.GZIPOutputStream;
 
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServlet;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.http.HttpServlet;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 
 import org.apache.commons.lang3.StringEscapeUtils;
 import org.apache.logging.log4j.LogManager;
@@ -153,6 +153,11 @@ public class controller extends HttpServlet
 		{
 			Settings.init(this);
 			mgr = new Manager(request);
+			if (mgr.getAuthorizationName() == null) {
+				// return an error rather than do stuff and fail on null pointer with missing user
+				response.sendError(HttpServletResponse.SC_FORBIDDEN, "User not found");
+				return;
+			}
 
 			_logger.info("Processing \"{}\" command.", cmd);
 			if (cmd.equalsIgnoreCase("create_mapping"))
@@ -160,7 +165,7 @@ public class controller extends HttpServlet
 			else if (cmd.equalsIgnoreCase("delete_mapping"))
 				mgr.deleteMapping(request.getParameter("mapping_path"));
 			else if (cmd.equalsIgnoreCase("import"))
-				response.getWriter().write(mgr.importMappings(request)); 
+				response.getWriter().write(mgr.importMappings(request));
 			else if (cmd.equalsIgnoreCase("merge_upload"))
 			{
 				String jsonRet = mgr.mergeMappingUpload(request);

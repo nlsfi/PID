@@ -355,7 +355,7 @@ public class Manager
 				.setBufferSize(MAX_SIZE_MEMORY).get();
 
             JakartaServletFileUpload upload = new JakartaServletFileUpload(diskFileItemFactory);
-			upload.setSizeMax(1 * MB); // 1 MB
+			upload.setMaxSize(1 * MB); // 1 MB
 // 			ServletFileUpload uploadHandler = new ServletFileUpload(fileItemFactory);
 
 			fileList = upload.parseRequest(request);

@@ -31,7 +31,7 @@
 		<!-- Overridable with: mvn -DfinalName=something_else clean install -->
 		<finalName>${project.artifactId}</finalName>
 		<jdk.release.version>21</jdk.release.version>
-        <log4j.version>2.25.2</log4j.version>
+        <log4j.version>2.25.3</log4j.version>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <postgresql.version>42.7.8</postgresql.version>
 		<postgres.jdbc.scope>provided</postgres.jdbc.scope>
@@ -212,7 +212,7 @@
 		<dependency>
 			<groupId>org.postgresql</groupId>
 			<artifactId>postgresql</artifactId>
-			<version>42.7.3</version>
+			<version>42.7.10</version>
 			<scope>${postgres.jdbc.scope}</scope>
 		</dependency>
 		<dependency>
@@ -233,7 +233,7 @@
 		<dependency>
 			<groupId>org.apache.commons</groupId>
 			<artifactId>commons-fileupload2-jakarta-servlet6</artifactId>
-			<version>2.0.0-M4</version>
+			<version>2.0.0-M5</version>
 		</dependency>
 		<dependency>
 			<groupId>com.google.zxing</groupId>
@@ -248,7 +248,8 @@
         <dependency>
             <groupId>org.jmock</groupId>
             <artifactId>jmock-junit4</artifactId>
-            <version>2.5.1</version>
+            <version>2.13.1</version>
+            <scope>test</scope>
         </dependency>
 
 		<!-- Replace JDK8 JAXB with Jakarta EE equivalents -->
@@ -261,7 +262,7 @@
         <dependency>
             <groupId>org.flywaydb</groupId>
             <artifactId>flyway-database-postgresql</artifactId>
-            <version>11.19.0</version>
+            <version>12.1.0</version>
         </dependency>
 	</dependencies>
 </project>

@@ -33,7 +33,7 @@
 		<jdk.release.version>21</jdk.release.version>
         <log4j.version>2.25.3</log4j.version>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <postgresql.version>42.7.8</postgresql.version>
+        <postgresql.version>42.7.10</postgresql.version>
 		<postgres.jdbc.scope>provided</postgres.jdbc.scope>
 		<version.check.repository>https://cgsrv1.arrc.csiro.au/swrepo/PidService/jenkins/master/</version.check.repository>
 	</properties>
